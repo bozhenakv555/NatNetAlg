@@ -1,11 +1,11 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-        <Qt_DEFINES_>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB</Qt_DEFINES_>
-    <Qt_INCLUDEPATH_>"D:\BAKALARKA\NatNet Algorithm\NatNetAlg\NatNetAlg\x64\Debug\qt\qmake\0536812c9b2e40499581fd45dd578c7d";C:\Qt\6.10.1\msvc2022_64\include;C:\Qt\6.10.1\msvc2022_64\include\QtWidgets;C:\Qt\6.10.1\msvc2022_64\include\QtGui;C:\Qt\6.10.1\msvc2022_64\include\QtCore;"D:\BAKALARKA\NatNet Algorithm\NatNetAlg\NatNetAlg\x64\Debug\qt\qmake\0536812c9b2e40499581fd45dd578c7d";C:\Qt\6.10.1\msvc2022_64\mkspecs\win32-msvc</Qt_INCLUDEPATH_>
+        <Qt_DEFINES_>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB</Qt_DEFINES_>
+    <Qt_INCLUDEPATH_>"D:\BAKALARKA\NatNet Algorithm\NatNetAlg\NatNetAlg\x64\Release\qt\qmake\6b7f08bb65fb4e7dad82c9449e5f9a88";C:\Qt\6.10.1\msvc2022_64\include;C:\Qt\6.10.1\msvc2022_64\include\QtWidgets;C:\Qt\6.10.1\msvc2022_64\include\QtGui;C:\Qt\6.10.1\msvc2022_64\include\QtCore;"D:\BAKALARKA\NatNet Algorithm\NatNetAlg\NatNetAlg\x64\Release\qt\qmake\6b7f08bb65fb4e7dad82c9449e5f9a88";C:\Qt\6.10.1\msvc2022_64\mkspecs\win32-msvc</Qt_INCLUDEPATH_>
     <Qt_STDCPP_>stdcpp17</Qt_STDCPP_>
-    <Qt_RUNTIME_>MultiThreadedDebugDLL</Qt_RUNTIME_>
+    <Qt_RUNTIME_>MultiThreadedDLL</Qt_RUNTIME_>
     <Qt_CL_OPTIONS_>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr -utf-8</Qt_CL_OPTIONS_>
-    <Qt_LIBS_>C:\Qt\6.10.1\msvc2022_64\lib\Qt6Widgetsd.lib;C:\Qt\6.10.1\msvc2022_64\lib\Qt6Guid.lib;C:\Qt\6.10.1\msvc2022_64\lib\Qt6Cored.lib;C:\Qt\6.10.1\msvc2022_64\lib\Qt6EntryPointd.lib;shell32.lib</Qt_LIBS_>
+    <Qt_LIBS_>C:\Qt\6.10.1\msvc2022_64\lib\Qt6Widgets.lib;C:\Qt\6.10.1\msvc2022_64\lib\Qt6Gui.lib;C:\Qt\6.10.1\msvc2022_64\lib\Qt6Core.lib;C:\Qt\6.10.1\msvc2022_64\lib\Qt6EntryPoint.lib;shell32.lib</Qt_LIBS_>
     <Qt_LINK_OPTIONS_>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'"</Qt_LINK_OPTIONS_>
         <QMake_QT_SYSROOT_></QMake_QT_SYSROOT_>
     <QMake_QT_INSTALL_PREFIX_>C:/Qt/6.10.1/msvc2022_64</QMake_QT_INSTALL_PREFIX_>
@@ -32,7 +32,7 @@
     <QMake_QMAKE_XSPEC_>win32-msvc</QMake_QMAKE_XSPEC_>
     <QMake_QMAKE_VERSION_>3.1</QMake_QMAKE_VERSION_>
     <QMake_QT_VERSION_>6.10.1</QMake_QT_VERSION_>
-    <QtBkup_QtHash>jZFBbsQgDEWv4hNM0qia3SyI7VJPCSAbWo2qKve/RUmUUaRuyoIN/Pft//kW4likPG7Xy8t4GdfFPnEap2m9vgImZfBV4EvIczGYJe6H+E0i223Imu6MZZDCy34pRVL0mmoeMGBasgRuKm5CZLOkp8pAIoZKnF1577VyRPsIFw6YRNsCSYUNrBDm3GsVXPTVebbiIjkl0NqaWLiXP+RBZnX6AAxrylv67lrOLAcIzesfusX+GE6wlcex/SBu8be3vh3+uDzHE8/V//wC</QtBkup_QtHash>
+    <QtBkup_QtHash>jZFBbsMwDAS/whfEjlHkloNCsipbWRJIqUUQBP7/LyobLgz0Eh10kXaW3NVDiGORcr9eTufxNC6zfeM0TtNyeQNMyuCrwI+Q52Jwk7gd4neJbNcha/pkLIMUnrdLKZKi11TzgAHTnCVwU3ETIpslPVQGEjFU4uzKR6+VI9pGuLDDJNoWSCpsYIUw516r4KKvzrMVF8kpgdbWxMy9/C4PclOnd8CwpLym767lyLKD0Lxe0C3213CArTyO7Qdxjb++9e3wz+VvvHJgZ/z8BQ==</QtBkup_QtHash>
     <QtVersion>6.10.1</QtVersion>
     <QtVersionMajor>6</QtVersionMajor>
     <QtVersionMinor>10</QtVersionMinor>

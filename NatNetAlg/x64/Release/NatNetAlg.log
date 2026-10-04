@@ -1,0 +1,12 @@
+﻿   Qt/MSBuild: 3.5.0.0
+   Qt: 6.10.1
+  dataset.cpp
+  NatNetAlg.cpp
+  main.cpp
+  qrc_NatNetAlg.cpp
+  moc_NatNetAlg.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 176 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  NatNetAlg.vcxproj -> D:\BAKALARKA\NatNet Algorithm\NatNetAlg\x64\Release\NatNetAlg.exe

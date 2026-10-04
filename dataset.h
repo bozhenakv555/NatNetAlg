@@ -8,16 +8,16 @@ private:
 	std::vector<Point> points;
 	int N_C; //celkovy pocet klastrov
 public:
-	Dataset();
+	Dataset() {};
 
 	void generateData(int N_c);
 
-	void loadDataFromFile(std::string filename);
+	//void loadDataFromFile(std::string filename);
 
 	void clear();
-	void addPoint(const Point& p);
+	//void addPoint(const Point& p);
 	const std::vector<Point>& getPoints();
 	int getNumClusters() const { return N_C; }
 
-	~Dataset();
+	~Dataset() {};
 };
