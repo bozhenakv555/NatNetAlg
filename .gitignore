@@ -1,0 +1,7 @@
+# Visual Studio / Qt / Build files
+.vs/
+build/
+*.user
+*.suo
+.cmake/
+CMakeCache.txt
