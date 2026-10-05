@@ -1,13 +1,28 @@
 #include "dataset.h"
 #include <random>
 
+void Dataset::clear()
+{
+    points.clear();
+}
+
+void Dataset::addPoint(const Point& p)
+{
+    points.push_back(p);
+}
+
 const std::vector<Point>& Dataset::getPoints() {
     return points;
 }
 
+int Dataset::getNumClusters() const
+{
+    return N_C; 
+}
+
 void Dataset::generateData(int N_c)
 {
-    points.clear();
+    clear();
     this->N_C = N_c;
     double std_deviation = 0.05; //smerodajna odchylka bodov voci centroidu
 
@@ -32,10 +47,10 @@ void Dataset::generateData(int N_c)
 
         for (int i = 0; i < pointsInCluster; i++) {
             //okolo taziska (centroidu-stredu) "rozsypeme" body pomocou norm rozd
-            double x = centroid_x + normalDist(gen);
-            double y = centroid_y + normalDist(gen);
+            double x1 = centroid_x + normalDist(gen);
+            double x2 = centroid_y + normalDist(gen);
 
-            Point pnt(x, y, cluster_num, false);
+            Point pnt(x1, x2, cluster_num, false);
             points.push_back(pnt);
         }
 

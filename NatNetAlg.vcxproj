@@ -95,6 +95,7 @@
     <QtRcc Include="NatNetAlg.qrc" />
     <QtUic Include="NatNetAlg.ui" />
     <QtMoc Include="NatNetAlg.h" />
+    <ClCompile Include="algorithm.cpp" />
     <ClCompile Include="dataset.cpp" />
     <ClCompile Include="NatNetAlg.cpp" />
     <ClCompile Include="main.cpp" />
