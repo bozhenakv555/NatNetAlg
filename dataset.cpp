@@ -42,9 +42,6 @@ void Dataset::generateData(int N_c)
         double centroid_x = unifDist(gen);
         double centroid_y = unifDist(gen);
 
-        std::normal_distribution<double> normalDist(0.0, std_deviation); //vytvarame rozdelnie - predpis pre generaciu pomocou motora gen na generaciu normalne(Gaussovo) rozdelenych bodov
-        //1.arg = str hodn, 2.arg = smerodajna odchylka = odmocina z rozptyla
-
         for (int i = 0; i < pointsInCluster; i++) {
             //okolo taziska (centroidu-stredu) "rozsypeme" body pomocou norm rozd
             double x1 = centroid_x + normalDist(gen);
