@@ -14,17 +14,17 @@ private:
     //ak je silny vplyv v rovnakom klastri, koeficient je velky a kladny, ak ide o odpudzovanie medzi klastrami, je zaporny
     //ak slaby, blizi sa k nule)
 
+    std::vector<std::vector<double>> systemMatrix;   //matica sustavy pre riesenie rovnic difuzie
+
     double getEpsilon(const Point& u, const Point& v);
 
     double calculateDiffusionCoef(const Point& u, const Point& v);
 
 public:
     Algorithm(Dataset* ds);
-   
+
     void buildGraph(); //topologia grafu-priprava hran a vypocet koeficientov
     void buildSystemMatrix(); //konstrukcia prirodzeenj siete - numericka diskretizacia pomocou semi-implicitnej schemy
-   
+
     void runNatNumNet(int maxTimeSteps);
-}
-
-
+};

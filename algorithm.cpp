@@ -11,23 +11,6 @@ Algorithm::Algorithm(Dataset* ds)
     this->tau = 0.1; //napr takyto casovy krok
 }
 
-void Algorithm::buildGraph()
-{
-    const std::vector<Point> points = dataset->getPoints();
-    int N_v = points.size(); //pocet vrholov grafu (dim matice susednosti)
-
-    //nastavime velkost matice na N_v*N_v a vyplneme ju nulami zatial:
-    diffusionCoefs.assign(N_v, std::vector<double>(N_v, 0.0)); //v assign: 1.arg nastavi #riadkov, 2.arg. co tie riadky obsahuju (tu: stlpec nul s dlzkou N_v)
-
-    for (int i = 0; i < N_v; i++) {
-        for (int j = 0; j < N_v; j++) {
-            if (i == j) continue; //vrchol nema hranu sam zo sebou
-
-            diffusionCoefs[i][j] = calculateDiffusionCoef(points[i], points[j]);
-        }
-    }
-}
-
 double Algorithm::getEpsilon(const Point& u, const Point& v) //parameter epsilon smeru difuzie: > 0- dopredna difuzia, < 0 - spatna difuzia
 {
     if (u.isNewObservation || v.isNewObservation) { //najprv akk je aspon jeden z bodov nove pozorovanie, pouzivame vzdy iba doprednu difuziu
@@ -61,3 +44,41 @@ double Algorithm::calculateDiffusionCoef(const Point& u, const Point& v)
     return g_e;
 }
 
+
+void Algorithm::buildGraph()
+{
+    const std::vector<Point> points = dataset->getPoints();
+    int N_v = points.size(); //pocet vrholov grafu (dim matice susednosti)
+
+    //nastavime velkost matice na N_v*N_v a vyplneme ju nulami zatial:
+    diffusionCoefs.assign(N_v, std::vector<double>(N_v, 0.0)); //v assign: 1.arg nastavi #riadkov, 2.arg. co tie riadky obsahuju (tu: stlpec nul s dlzkou N_v)
+
+    for (int i = 0; i < N_v; i++) {
+        for (int j = 0; j < N_v; j++) {
+            if (i == j) continue; //vrchol nema hranu sam zo sebou
+
+            diffusionCoefs[i][j] = calculateDiffusionCoef(points[i], points[j]);
+        }
+    }
+}
+
+void Algorithm::buildSystemMatrix()
+{
+    int N_v = dataset->getPoints().size();
+    systemMatrix.assign(N_v, std::vector<double>(N_v, 0.0)); //pripravime a vyplneme nulami maticu sustavy s rozmerom N_v*N_v
+
+    for (int i = 0; i < N_v; i++) { //prechadzame vsetky riadky
+        double sum_g_e = 0.0; //suma difuznych koeficientov pre diagonalu
+        for (int j = 0; j < N_v; j++) { //stlpce
+            double g_e = diffusionCoefs[i][j]; //dif koef z matice susednosti na i riadku a j stkpci
+            if (i != j) { //ak pocitame prvok mimo doagonaly
+                systemMatrix[i][j] = -tau * g_e;
+            }
+            else { 
+                continue; //diagonalne prvky riesime potom, ked nazbierame sucet dif koef s kazdeho stlpca tohto riadku
+            }
+            sum_g_e += g_e;
+        }
+        systemMatrix[i][i] = 1.0 + tau * sum_g_e; //presli sme kazdy stlpec v danom riaku, a pred prechodom na dalsi riadok, vypocitame diag prvok tohto
+    }
+}
