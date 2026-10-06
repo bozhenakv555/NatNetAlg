@@ -8,7 +8,7 @@ Algorithm::Algorithm(Dataset* ds)
     this->K1 = 3100; //z nnn_natura2000habitats_23.pdf pre LDS118 
     this->K2 = 1500; //*LDS118 - learning dataset zo 118 oznacenych segmentovanych reprezentativnych oblasti (vrcholov grafu) - vysledok finalnej optimalizacie topologie grafu siete
     this->delta = 0.003; //tiez odtialto
-    this->tau = 0.1; //napr takyto casovy krok
+    this->tau = 0.5; //napr takyto casovy krok
 }
 
 double Algorithm::getEpsilon(const Point& u, const Point& v) //parameter epsilon smeru difuzie: > 0- dopredna difuzia, < 0 - spatna difuzia
@@ -141,4 +141,22 @@ void Algorithm::solveSystemSOR() //sustava: systemMatrix * x1/2new = ps_x1/x2pre
        }
        iterations++;
    }
+   //prepiseme pozicie bodov v datasete na nove:
+   for (int i = 0; i < N_v; i++) {
+       dataset->updatePointCoordinates(i, x1new[i], x2new[i]);
+   }
+}
+
+void Algorithm::runNatNumNet(int maxTimeSteps)
+{
+    for (int step = 1; step <= maxTimeSteps; step++) {
+        //1. krok: vytvorime/aktualizujeme topologiu grafu a spocitame difuzne koeficienty pre hrany
+        buildGraph();
+
+        //2. krok: zostavime maticu sustavy pre tento casovy krok
+        buildSystemMatrix();
+
+        //3. krok: vyriesime sustavu rovnic pomocou SOR a spustime difuziu (pohyb bodov)
+        solveSystemSOR();
+    }
 }

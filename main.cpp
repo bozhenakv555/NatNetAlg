@@ -2,31 +2,27 @@
 #include <QtWidgets/QApplication>
 #include <iostream>
 #include "dataset.h"
+#include "algorithm.h"
 
 int main() {
-    Dataset ds;
+    Dataset dataset;
 
-    //TEST: vygenerujeme 3 klastre
-    ds.generateData(3);
+    dataset.generateData(5);
 
-    const auto& points = ds.getPoints();
+    std::cout << "pociatocne pozicie vygenerovanych bodov:" << std::endl;
+    const auto& points = dataset.getPoints();
+    for (size_t i = 0; i < points.size(); i++) {
+        std::cout << "bod " << i << " (klaster " << points[i].cluster_num << "): x1 = " << points[i].x1 << ", x2 = " << points[i].x2 << std::endl;
+    }
 
-    std::cout << "Celkovy pocet vygenerovanych bodov: " << points.size() << "\n";
+    Algorithm alg(&dataset);
+    alg.runNatNumNet(500);
 
-    for (const auto& p : points) {
-        std::cout << "Klaster: " << p.cluster_num
-            << " | X: " << p.x
-            << " | Y: " << p.y << "\n";
+    std::cout << "\npozicie bodov po 500 casovych krokoch:" << std::endl;
+    const auto& updated_points = dataset.getPoints();
+    for (size_t i = 0; i < updated_points.size(); i++) {
+        std::cout << "bod " << i << " (klaster " << updated_points[i].cluster_num << "): x1 = " << updated_points[i].x1 << ", x2 = " << updated_points[i].x2 << std::endl;
     }
 
     return 0;
 }
-//
-//int main(int argc, char *argv[])
-//{
-//    QApplication app(argc, argv);
-//    NatNetAlg window;
-//    window.show();
-//    return app.exec();
-//}
-

@@ -1,4 +1,8 @@
 ﻿   Qt/MSBuild: 3.5.0.0
-  Reading Qt configuration (C:/Qt/6.10.1/msvc2022_64/bin/qmake)
    Qt: 6.10.1
+  algorithm.cpp
+  main.cpp
+D:\BAKALARKA\NatNet Algorithm\NatNetAlg\algorithm.cpp(51,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\BAKALARKA\NatNet Algorithm\NatNetAlg\algorithm.cpp(67,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\BAKALARKA\NatNet Algorithm\NatNetAlg\algorithm.cpp(89,12): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   NatNetAlg.vcxproj -> D:\BAKALARKA\NatNet Algorithm\NatNetAlg\x64\Debug\NatNetAlg.exe

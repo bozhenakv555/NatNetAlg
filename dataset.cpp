@@ -20,6 +20,12 @@ int Dataset::getNumClusters() const
     return N_C; 
 }
 
+void Dataset::updatePointCoordinates(int index, double newX1, double newX2)
+{
+    points[index].x1 = newX1;
+    points[index].x2 = newX2;
+}
+
 void Dataset::generateData(int N_c)
 {
     clear();

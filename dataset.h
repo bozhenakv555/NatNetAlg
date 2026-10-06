@@ -18,6 +18,7 @@ public:
 	void addPoint(const Point& p);
 	const std::vector<Point>& getPoints();
 	int getNumClusters() const;
+	void updatePointCoordinates(int index, double newX1, double newX2);
 
 	~Dataset() {};
 };

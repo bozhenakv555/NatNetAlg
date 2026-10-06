@@ -24,8 +24,8 @@ public:
     Algorithm(Dataset* ds);
 
     void buildGraph(); //topologia grafu-priprava hran a vypocet koeficientov
-    void buildSystemMatrix(); //konstrukcia prirodzeenj siete - numericka diskretizacia pomocou semi-implicitnej schemy
-    void solveSystemSOR();
+    void buildSystemMatrix(); //konstrukcia prirodzenej siete - numericka diskretizacia pomocou semi-implicitnej schemy
+    void solveSystemSOR(); //vyriesenie sustavy rovnic difuzie v tej scheme pomocou iteracnej metody SOR
 
     void runNatNumNet(int maxTimeSteps);
 };
