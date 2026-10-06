@@ -25,6 +25,7 @@ public:
 
     void buildGraph(); //topologia grafu-priprava hran a vypocet koeficientov
     void buildSystemMatrix(); //konstrukcia prirodzeenj siete - numericka diskretizacia pomocou semi-implicitnej schemy
+    void solveSystemSOR();
 
     void runNatNumNet(int maxTimeSteps);
 };

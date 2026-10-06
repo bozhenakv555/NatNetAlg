@@ -82,3 +82,63 @@ void Algorithm::buildSystemMatrix()
         systemMatrix[i][i] = 1.0 + tau * sum_g_e; //presli sme kazdy stlpec v danom riaku, a pred prechodom na dalsi riadok, vypocitame diag prvok tohto
     }
 }
+
+void Algorithm::solveSystemSOR() //sustava: systemMatrix * x1/2new = ps_x1/x2prev
+{
+   double omega = 1.3; //parameter relaxacie
+   int N_v = dataset->getPoints().size();
+
+   //priprava vektorov pre pociatocne odhady a nasledovne "prave pocitane" hodnoty
+   std::vector<double> x1new(N_v);
+   std::vector<double> x2new(N_v);
+   //priprava vektorov pre ps z predch cas kroku
+   std::vector<double> ps_x1prev(N_v);
+   std::vector<double> ps_x2prev(N_v);
+
+   const std::vector<Point>& points = dataset->getPoints(); //aktualne suradnice bodov 
+   for (int i = 0; i < N_v; i++) {
+       //p.s sustavy x_i^(n-1)(vertex_index) - hodnoty konkretnej vlastnosti (x1/x2) v znamom predchadzajucom kroku v konkretnom vrchole
+       ps_x1prev[i] = points[i].x1; 
+       ps_x2prev[i] = points[i].x2;
+
+       //pociatocny odhad pre iteracie (zaciname tento krok tam, kde sme skoncili v minulom kroku):
+       x1new[i] = points[i].x1;
+       x2new[i] = points[i].x2;
+   }
+
+   int iterations = 0;
+   //MOZNOST OPTIMALIZACIE: pridat kontrolu konvergencie cez max odchylku (maxShift) noveho bodu od predchadzajuceho
+   //->na konci kazkej iteracie while zistime najvacsi posun bodu: ak je mensi ako limit (stopThreshold), cyklus hned ukoncime, lebo riesenie sa uz stabilizovalo a nemeni sa velmi strmo
+   while (iterations<100) {
+       //Vzorec SOR (Successive Over-Relaxation (w>1)) metody:
+       //x_i^(k+1) = (1 - omega) * x_i^(k) + (omega / a_ii) * [ b_i - sum_{j=1}^{i-1} a_ij * x_j^(k+1) - sum_{j=i+1}^{n} a_ij * x_j^(k) ]
+        //- x_i^(k+1) = x1/2new[i] (po sor): nova prave pocitana suradnica v iteracii (k+1)
+        //- omega: relaxacny parameter pre zrychlenie konvergencie
+        //- x_i^(k) = x1/2new[i] (pred sor): stara hodnota suradnice z predch. iteracie (k)
+        //- a_ii = systemMatrix[i][j]: diagonalny prvok matice sustavy
+        //- b_i = ps_x1/2prev[i]: prava strana (pozicia z casoveho kroku n-1)
+        //- 1. suma (1 do i-1) = for po j od 0 po N_v-1: pouziva nove hodnoty (k+1)
+        //- 2. suma (i+1 do n) = ten isty for: pouziva stare hodnoty (k) (pred sor)
+
+       for (int i = 0; i < N_v; i++) { //prechadzame vsetky riadky
+           double sum1 = 0.0; //pre x1
+           double sum2 = 0.0; //pre x2
+           for (int j = 0; j < N_v; j++) { //prechadzame vsetky stlpce (ako tie sumy vo vzorci)
+               if (i == j) continue; //diag prvok (a_ii) vynechavame, to je v menovateli
+               //x1_new[j] automaticky berie (k+1) pre uz spocitane a (k) pre nespocitane:
+               sum1 += systemMatrix[i][j] * x1new[j];
+               sum2 += systemMatrix[i][j] * x2new[j];
+               //namiesto tych dvoch sun nam vznikne jedna {0}^{N_v-1} resp {1}^{N_v}
+           }
+
+           //aplikujeme vzorec: (1 - omega) * x_i^(k) + (omega / a_ii) * [ b_i - suma ]
+           double x1_sor = (1.0 - omega) * x1new[i] + (omega / systemMatrix[i][i]) * (ps_x1prev[i] - sum1);
+           double x2_sor = (1.0 - omega) * x2new[i] + (omega / systemMatrix[i][i]) * (ps_x2prev[i] - sum2);
+            
+           //a hned zapisujeme prave vypocitanu hodnotu (k+1) do toho vektora pre nasledujuce body
+           x1new[i] = x1_sor;
+           x2new[i] = x2_sor;
+       }
+       iterations++;
+   }
+}
