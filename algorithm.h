@@ -1,5 +1,6 @@
 #pragma once
 #include "dataset.h"
+#include <Eigen/Dense> //pridany eigen pre pracu s maticami
 
 class Algorithm {
 private:
@@ -14,7 +15,8 @@ private:
     //ak je silny vplyv v rovnakom klastri, koeficient je velky a kladny, ak ide o odpudzovanie medzi klastrami, je zaporny
     //ak slaby, blizi sa k nule)
 
-    std::vector<std::vector<double>> systemMatrix;   //matica sustavy pre riesenie rovnic difuzie
+    std::vector<std::vector<double>> systemMatrix;  //matica sustavy pre riesenie rovnic difuzie
+    //Eigen::MatrixXd systemMatrixEigen; //alternativna matica sustavy pre riesenie rovnic difuzie s pouzitim eigen
 
     double getEpsilon(const Point& u, const Point& v);
 
@@ -24,6 +26,7 @@ public:
     Algorithm(Dataset* ds);
 
     void buildGraph(); //topologia grafu-priprava hran a vypocet koeficientov
+
     void buildSystemMatrix(); //konstrukcia prirodzenej siete - numericka diskretizacia pomocou semi-implicitnej schemy
     void solveSystemSOR(); //vyriesenie sustavy rovnic difuzie v tej scheme pomocou iteracnej metody SOR
 

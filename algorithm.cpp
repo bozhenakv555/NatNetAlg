@@ -11,7 +11,7 @@ Algorithm::Algorithm(Dataset* ds)
     this->tau = 0.5; //napr takyto casovy krok
 }
 
-double Algorithm::getEpsilon(const Point& u, const Point& v) //parameter epsilon smeru difuzie: > 0- dopredna difuzia, < 0 - spatna difuzia
+double Algorithm::getEpsilon(const Point& u, const Point& v) //parameter epsilon smeru difuzie: > 0 - dopredna difuzia, < 0 - spatna difuzia
 {
     if (u.isNewObservation || v.isNewObservation) { //najprv akk je aspon jeden z bodov nove pozorovanie, pouzivame vzdy iba doprednu difuziu
         return 1.0; //(hodnota z nnn_directedgraph_23.pdf)
@@ -64,6 +64,7 @@ void Algorithm::buildGraph()
 
 void Algorithm::buildSystemMatrix()
 {
+    //moj prvy navrh:
     int N_v = dataset->getPoints().size();
     systemMatrix.assign(N_v, std::vector<double>(N_v, 0.0)); //pripravime a vyplneme nulami maticu sustavy s rozmerom N_v*N_v
 
@@ -81,10 +82,32 @@ void Algorithm::buildSystemMatrix()
         }
         systemMatrix[i][i] = 1.0 + tau * sum_g_e; //presli sme kazdy stlpec v danom riaku, a pred prechodom na dalsi riadok, vypocitame diag prvok tohto
     }
+
+
+
+    ////eigen alternativa:
+    //int N_v = dataset->getPoints().size();
+    //systemMatrixEigen = Eigen::MatrixXd::Zero(N_v, N_v); //matica N_v x N_v vyplnena nulami
+
+    //for (int i = 0; i < N_v; i++) {
+    //    double sum_g_e = 0.0;
+    //    for (int j = 0; j < N_v; j++) {
+    //        double g_e = diffusionCoefs[i][j];
+    //        if (i != j) {
+    //            systemMatrixEigen(i, j) = -tau * g_e; 
+    //        }
+    //        else {
+    //            continue; //diagonalne prvky riesime potom, ked nazbierame sucet dif koef s kazdeho stlpca tohto riadku
+    //        }
+    //        sum_g_e += g_e;
+    //    }
+    //    systemMatrixEigen(i, i) = 1.0 + tau * sum_g_e;  //diagonalny prvok
+    //}
 }
 
 void Algorithm::solveSystemSOR() //sustava: systemMatrix * x1/2new = ps_x1/x2prev
 {
+   //moj prvy navrh:
    double omega = 1.3; //parameter relaxacie
    int N_v = dataset->getPoints().size();
 
@@ -145,6 +168,73 @@ void Algorithm::solveSystemSOR() //sustava: systemMatrix * x1/2new = ps_x1/x2pre
    for (int i = 0; i < N_v; i++) {
        dataset->updatePointCoordinates(i, x1new[i], x2new[i]);
    }
+
+
+
+   ////pre eigen maticu:
+   // double omega = 1.3; 
+   // int N_v = dataset->getPoints().size();
+
+   // std::vector<double> x1new(N_v);
+   // std::vector<double> x2new(N_v);
+   // std::vector<double> ps_x1prev(N_v);
+   // std::vector<double> ps_x2prev(N_v);
+
+   // const std::vector<Point>& points = dataset->getPoints();
+   // for (int i = 0; i < N_v; i++) {
+   //     ps_x1prev[i] = points[i].x1;
+   //     ps_x2prev[i] = points[i].x2;
+
+   //     x1new[i] = points[i].x1;
+   //     x2new[i] = points[i].x2;
+   // }
+
+   // int iterations = 0;
+   // while (iterations < 100) {
+   //     for (int i = 0; i < N_v; i++) {
+   //         double sum1 = 0.0;
+   //         double sum2 = 0.0;
+   //         for (int j = 0; j < N_v; j++) {
+   //             if (i == j) continue;
+
+   //             //zmena iba tu
+   //             sum1 += systemMatrixEigen(i, j) * x1new[j];
+   //             sum2 += systemMatrixEigen(i, j) * x2new[j];
+   //         }
+
+   //         //aj tu
+   //         double x1_sor = (1.0 - omega) * x1new[i] + (omega / systemMatrixEigen(i, i)) * (ps_x1prev[i] - sum1);
+   //         double x2_sor = (1.0 - omega) * x2new[i] + (omega / systemMatrixEigen(i, i)) * (ps_x2prev[i] - sum2);
+
+   //         x1new[i] = x1_sor;
+   //         x2new[i] = x2_sor;
+   //     }
+   //     iterations++;
+   // }
+
+   // for (int i = 0; i < N_v; i++) {
+   //     dataset->updatePointCoordinates(i, x1new[i], x2new[i]);
+   // }
+
+
+
+   ////eigen navrh s LU dekompoziciou:
+   //int N_v = dataset->getPoints().size();
+   ////vektory pre prave strany (predchadzajuce pozicie)
+   //Eigen::VectorXd ps_x1prev(N_v);
+   //Eigen::VectorXd ps_x2prev(N_v);
+   //const std::vector<Point>& points = dataset->getPoints();
+   //for (int i = 0; i < N_v; i++) {
+   //    ps_x1prev(i) = points[i].x1;
+   //    ps_x2prev(i) = points[i].x2;
+   //}
+   ////priame riesenie sustavy cez lu dekompoziciu v eigen: matica sa rozlozi na trojuholnikove casti - hornu a dolnu (raz, kedze je rovnaka pre x1/2), a vysledok pre x1 a x2 sa vypocita presne bez iteracii v jednom kroku
+   //Eigen::VectorXd x1new = systemMatrixEigen.partialPivLu().solve(ps_x1prev);
+   //Eigen::VectorXd x2new = systemMatrixEigen.partialPivLu().solve(ps_x2prev);
+   ////prepis do datasetu
+   //for (int i = 0; i < N_v; i++) {
+   //    dataset->updatePointCoordinates(i, x1new(i), x2new(i));
+   //}
 }
 
 void Algorithm::runNatNumNet(int maxTimeSteps)
