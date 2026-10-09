@@ -26,6 +26,13 @@ void Dataset::updatePointCoordinates(int index, double newX1, double newX2)
     points[index].x2 = newX2;
 }
 
+void Dataset::setNewcomerStatus(int index, bool status)
+{
+    if (index >= 0 && index < points.size()) {
+        points[index].isNewObservation = status;
+    }
+}
+
 void Dataset::generateData(int N_c)
 {
     clear();
@@ -43,7 +50,9 @@ void Dataset::generateData(int N_c)
 
     for (int cluster_num = 0; cluster_num < N_c; cluster_num++) {
 
-        int pointsInCluster = 3 + (rand() % 8); //pocet bodov v klastri (nah cislo v rozsahu od 3 po 10)
+
+        //int pointsInCluster = 3 + (rand() % 8); //pocet bodov v klastri (nah cislo v rozsahu od 3 po 10)
+        int pointsInCluster = 5; 
 
         double centroid_x = unifDist(gen);
         double centroid_y = unifDist(gen);

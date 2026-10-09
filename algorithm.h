@@ -18,9 +18,9 @@ private:
     std::vector<std::vector<double>> systemMatrix;  //matica sustavy pre riesenie rovnic difuzie
     //Eigen::MatrixXd systemMatrixEigen; //alternativna matica sustavy pre riesenie rovnic difuzie s pouzitim eigen
 
-    double getEpsilon(const Point& u, const Point& v);
+    double getEpsilon(const Point& v, const Point& u);
 
-    double calculateDiffusionCoef(const Point& u, const Point& v);
+    double calculateDiffusionCoef(const Point& v, const Point& u);
 
 public:
     Algorithm(Dataset* ds);

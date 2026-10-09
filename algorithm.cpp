@@ -11,9 +11,9 @@ Algorithm::Algorithm(Dataset* ds)
     this->tau = 0.5; //napr takyto casovy krok
 }
 
-double Algorithm::getEpsilon(const Point& u, const Point& v) //parameter epsilon smeru difuzie: > 0 - dopredna difuzia, < 0 - spatna difuzia
+double Algorithm::getEpsilon(const Point& v, const Point& u) //parameter epsilon smeru difuzie: > 0 - dopredna difuzia, < 0 - spatna difuzia
 {
-    if (u.isNewObservation || v.isNewObservation) { //najprv akk je aspon jeden z bodov nove pozorovanie, pouzivame vzdy iba doprednu difuziu
+    if (u.isNewObservation || v.isNewObservation) { //najprv ak je aspon jeden z bodov nove pozorovanie, pouzivame vzdy iba doprednu difuziu
         return 1.0; //(hodnota z nnn_directedgraph_23.pdf)
     }
     if (u.cluster_num == v.cluster_num) {
@@ -24,7 +24,7 @@ double Algorithm::getEpsilon(const Point& u, const Point& v) //parameter epsilon
     }
 }
 
-double Algorithm::calculateDiffusionCoef(const Point& u, const Point& v)
+double Algorithm::calculateDiffusionCoef(const Point& v, const Point& u)
 {
     double g_e; //difuzny koef
 
@@ -34,10 +34,13 @@ double Algorithm::calculateDiffusionCoef(const Point& u, const Point& v)
     l1 = u.x1 - v.x1;
     l2 = u.x2 - v.x2;
 
-    if (u.isNewObservation || v.isNewObservation) {
+    if (!v.isNewObservation && u.isNewObservation) { //ak je bod v (prave pocitany - i-ty riadok matice) - z datasetu a u (sused - j-ty stlpec matice) je newcomer, nedovolime newcomerovi ovplyvnovat stary bod -> dif koef = 0 v tomto sltpci
+        g_e = 0;
+    }
+    else if (v.isNewObservation || u.isNewObservation) { //ak je aspon jeden z nich newcomer, pouzijeme vzorec s deltou pre nove pozorovanie
         g_e = std::max(eps * (1 / (1 + K1 * l1 * l1 + K2 * l2 * l2)) - delta, 0.0);
     }
-    else {
+    else { //standardny pripad pre body z datasetu
         g_e = eps * (1 / (1 + K1 * l1 * l1 + K2 * l2 * l2));
     }
 

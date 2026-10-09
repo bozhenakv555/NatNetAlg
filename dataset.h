@@ -20,5 +20,7 @@ public:
 	int getNumClusters() const;
 	void updatePointCoordinates(int index, double newX1, double newX2);
 
+	void setNewcomerStatus(int index, bool status);
+
 	~Dataset() {};
 };
