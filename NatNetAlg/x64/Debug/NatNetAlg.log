@@ -1,7 +1,8 @@
 ﻿   Qt/MSBuild: 3.5.0.0
    Qt: 6.10.1
   algorithm.cpp
-D:\BAKALARKA\NatNet Algorithm\NatNetAlg\algorithm.cpp(55,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\BAKALARKA\NatNet Algorithm\NatNetAlg\algorithm.cpp(72,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\BAKALARKA\NatNet Algorithm\NatNetAlg\algorithm.cpp(116,12): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\BAKALARKA\NatNet Algorithm\NatNetAlg\algorithm.cpp(56,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\BAKALARKA\NatNet Algorithm\NatNetAlg\algorithm.cpp(87,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\BAKALARKA\NatNet Algorithm\NatNetAlg\algorithm.cpp(131,12): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\BAKALARKA\NatNet Algorithm\NatNetAlg\algorithm.cpp(279,1): warning C4715: 'Algorithm::runNatNumNet': not all control paths return a value
   NatNetAlg.vcxproj -> D:\BAKALARKA\NatNet Algorithm\NatNetAlg\x64\Debug\NatNetAlg.exe

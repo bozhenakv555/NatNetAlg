@@ -1,6 +1,7 @@
 #include "algorithm.h"
 #include <algorithm> //pre max function
 #include <fstream> //pre pracu so subormi
+#include <iostream> //pre cout
 
 Algorithm::Algorithm(Dataset* ds)
 {
@@ -9,7 +10,7 @@ Algorithm::Algorithm(Dataset* ds)
     this->K1 = 3100; //z nnn_natura2000habitats_23.pdf pre LDS118 
     this->K2 = 1500; //*LDS118 - learning dataset zo 118 oznacenych segmentovanych reprezentativnych oblasti (vrcholov grafu) - vysledok finalnej optimalizacie topologie grafu siete
     this->delta = 0.003; //tiez odtialto
-    this->tau = 0.1; //napr takyto casovy krok
+    this->tau = 0.3; //napr takyto casovy krok
 }
 
 double Algorithm::getEpsilon(const Point& v, const Point& u) //parameter epsilon smeru difuzie: > 0 - dopredna difuzia, < 0 - spatna difuzia
@@ -49,7 +50,7 @@ double Algorithm::calculateDiffusionCoef(const Point& v, const Point& u)
 }
 
 
-void Algorithm::buildGraph()
+bool Algorithm::buildGraph(double diffusionGap)
 {
     const std::vector<Point> points = dataset->getPoints();
     int N_v = points.size(); //pocet vrholov grafu (dim matice susednosti)
@@ -57,13 +58,27 @@ void Algorithm::buildGraph()
     //nastavime velkost matice na N_v*N_v a vyplneme ju nulami zatial:
     diffusionCoefs.assign(N_v, std::vector<double>(N_v, 0.0)); //v assign: 1.arg nastavi #riadkov, 2.arg. co tie riadky obsahuju (tu: stlpec nul s dlzkou N_v)
 
+    bool isStabilized = true; //na zaciatku predpokladame, ze uz sa uz vsetky body z jedneho klastru skoncili v jednom bode - simulacia (celkovy stav siete) je sabilizovana
+
     for (int i = 0; i < N_v; i++) {
         for (int j = 0; j < N_v; j++) {
             if (i == j) continue; //vrchol nema hranu sam zo sebou
 
-            diffusionCoefs[i][j] = calculateDiffusionCoef(points[i], points[j]);
+            double g_e = calculateDiffusionCoef(points[i], points[j]);
+            diffusionCoefs[i][j] = g_e;
+
+            //kontrola stabilizacie iba pre body vo vnutri rovnakeho klastra (okrem newcomerov)
+            if (points[i].cluster_num == points[j].cluster_num &&
+                !points[i].isNewObservation && !points[j].isNewObservation) {
+
+                //ak odchylka g_e od idealnej jednotky (g_e=1 ked vzdialenost medzi bodmi je nulova) je stale vzdialena viac ako na 0.01, simulacia pokracuje (zatial nie je stabilizovana)
+                if ((1.0 - g_e) > diffusionGap) {
+                    isStabilized = false;
+                }
+            }
         }
     }
+    return isStabilized; //vrati true, ak vsetky dvojice v klastroch splnili podmienku
 }
 
 void Algorithm::buildSystemMatrix()
@@ -241,33 +256,46 @@ void Algorithm::solveSystemSOR() //sustava: systemMatrix * x1/2new = ps_x1/x2pre
    //}
 }
 
-void Algorithm::runNatNumNet(int maxTimeSteps)
+int Algorithm::runNatNumNet(int maxTimeSteps)
 {
+    int stepsTaken = maxTimeSteps; //zatial predpokladame, ze prebehnu vsetky kroky
+
     for (int step = 1; step <= maxTimeSteps; step++) {
         //1. krok: vytvorime/aktualizujeme topologiu grafu a spocitame difuzne koeficienty pre hrany
-        buildGraph();
+        //+skontrolujeme, ci mame uz vsetky klastre sformovane a ci mozme zastavit simulaciu
+            if (buildGraph(0.01)) { 
+                stepsTaken = step - 1; //ulozime si, kolko krokov sa realne uskutocnilo
+                break;
+            }
 
         //2. krok: zostavime maticu sustavy pre tento casovy krok
         buildSystemMatrix();
 
         //3. krok: vyriesime sustavu rovnic pomocou SOR a spustime difuziu (pohyb bodov)
         solveSystemSOR();
+
+        return stepsTaken;
     }
 }
 
-void Algorithm::saveSimulationToFile(std::string filename, int maxTimeSteps)
+int Algorithm::saveSimulationToFile(std::string filename, int maxTimeSteps)
 {
     std::ofstream outFile(filename);
     if (!outFile.is_open()) {
-        return; //ak sa subor nepodarilo otvorit
+        return 0; //ak sa subor nepodarilo otvorit
     }
+
+    int stepsTaken = maxTimeSteps; //zatial predpokladame, ze prebehnu vsetky kroky
 
     //zapiseme zaciatok zoznamu pre mathematica: {
     outFile << "{\n";
 
     for (int step = 1; step <= maxTimeSteps; step++) {
-        //1. krok: vytvorime topologiu grafu a spocitame difuzne koeficienty
-        buildGraph();
+        //1. krok: vytvorime topologiu grafu a spocitame difuzne koeficienty +skontrolujeme, ci mame je uz simulacia stabilizovana
+        if (buildGraph(0.01)) {
+            stepsTaken = step - 1; //zaznamename si, kolko krokov sa realne uskutocnilo (minus 1, lebo v aktualnom po splneni podmienky stabilizovanosti sa uz body nehybali)
+            break;
+        }
 
         //2. krok: zostavime maticu sustavy
         buildSystemMatrix();
@@ -275,9 +303,15 @@ void Algorithm::saveSimulationToFile(std::string filename, int maxTimeSteps)
         //3. krok: vyriesime sustavu a posunieme body
         solveSystemSOR();
 
+
+        //ak nie sme v prvom kroku, vlozime najprv ciarku pred novym zapisanym bodom (teda po tom predchadzajucom)
+        //(to robime preto, aby nemali sme po break zbytocnu ciarku na konci zoznamu)
+        if (step > 1) {
+            outFile << ",\n";
+        }
         //export pozicii vsetkych bodov do suboru pre tento casovy krok
         outFile << "{";
-        const auto& points = dataset->getPoints();
+        const std::vector<Point> points = dataset->getPoints();
         for (size_t i = 0; i < points.size(); i++) {
             //zapiseme bod ako {x1, x2, klaster, newcomer_flag}
             outFile << "{" << points[i].x1 << ", " << points[i].x2 << ", " << points[i].cluster_num << ", " << (points[i].isNewObservation ? 1 : 0) << "}";
@@ -286,13 +320,12 @@ void Algorithm::saveSimulationToFile(std::string filename, int maxTimeSteps)
             }
         }
         outFile << "}";
-
-        if (step < maxTimeSteps) {
-            outFile << ",\n"; // ciarka medzi casovymi krokmi
-        }
     }
 
-    // zatvorime hlavny zoznam pre mathematice: }
-            outFile << "\n}\n";
-        outFile.close();
+    //zatvorime hlavny zoznam pre mathematica: }
+    outFile << "\n}\n";
+
+    outFile.close();
+
+    return stepsTaken;
 }

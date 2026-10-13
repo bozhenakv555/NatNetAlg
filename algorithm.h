@@ -25,12 +25,11 @@ private:
 public:
     Algorithm(Dataset* ds);
 
-    void buildGraph(); //topologia grafu-priprava hran a vypocet koeficientov
-
+    bool buildGraph(double diffusionGap = 0.01); //topologia grafu-priprava hran a vypocet koeficientov (a rovno zistujeme ci uz mozeme zastavit simulaciu - vrati true ak sa uz vsetky body v klastroch dostatocne zhlukli (koeficient sa blizi k 1))
     void buildSystemMatrix(); //konstrukcia prirodzenej siete - numericka diskretizacia pomocou semi-implicitnej schemy
     void solveSystemSOR(); //vyriesenie sustavy rovnic difuzie v tej scheme pomocou iteracnej metody SOR
 
-    void runNatNumNet(int maxTimeSteps);
+    int runNatNumNet(int maxTimeSteps);
 
-    void saveSimulationToFile(std::string filename, int maxTimeSteps);
+    int saveSimulationToFile(std::string filename, int maxTimeSteps);
 };

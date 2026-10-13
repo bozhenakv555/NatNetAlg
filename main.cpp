@@ -22,10 +22,10 @@ int main() {
     }
 
     Algorithm alg(&dataset);
-    alg.runNatNumNet(500); //zatial necham 500 krokov, neskor pridame zastavovacie kriterium
-    alg.saveSimulationToFile("simulaciaNatNetdata.txt", 500);
+    //alg.runNatNumNet(500); //zatial necham 500 krokov, neskor pridame zastavovacie kriterium
+    int timeSteps = alg.saveSimulationToFile("simulaciaNatNetdata.txt", 500);
 
-    std::cout << "\nPozicie bodov po 500 casovych krokoch:" << std::endl;
+    std::cout << "\nPozicie bodov po ukonceni simulacie (realny pocet krokov: " << timeSteps << "):" << std::endl;
     const auto& updated_points = dataset.getPoints();
     for (size_t i = 0; i < updated_points.size(); i++) {
         std::cout << "bod " << i << " (klaster " << updated_points[i].cluster_num << ")";
