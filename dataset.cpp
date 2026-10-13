@@ -37,7 +37,7 @@ void Dataset::generateData(int N_c)
 {
     clear();
     this->N_C = N_c;
-    double std_deviation = 0.05; //smerodajna odchylka bodov voci centroidu
+    double std_deviation = 0.15; //smerodajna odchylka bodov voci centroidu
 
     //generator(gen) pre nah cisla z nejakeho rozdelenia
     std::random_device rd;

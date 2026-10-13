@@ -23,6 +23,7 @@ int main() {
 
     Algorithm alg(&dataset);
     alg.runNatNumNet(500); //zatial necham 500 krokov, neskor pridame zastavovacie kriterium
+    alg.saveSimulationToFile("simulaciaNatNetdata.txt", 500);
 
     std::cout << "\nPozicie bodov po 500 casovych krokoch:" << std::endl;
     const auto& updated_points = dataset.getPoints();

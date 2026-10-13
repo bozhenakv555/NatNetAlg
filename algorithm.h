@@ -31,4 +31,6 @@ public:
     void solveSystemSOR(); //vyriesenie sustavy rovnic difuzie v tej scheme pomocou iteracnej metody SOR
 
     void runNatNumNet(int maxTimeSteps);
+
+    void saveSimulationToFile(std::string filename, int maxTimeSteps);
 };

@@ -1,5 +1,6 @@
 #include "algorithm.h"
-#include <algorithm> //for max function
+#include <algorithm> //pre max function
+#include <fstream> //pre pracu so subormi
 
 Algorithm::Algorithm(Dataset* ds)
 {
@@ -8,7 +9,7 @@ Algorithm::Algorithm(Dataset* ds)
     this->K1 = 3100; //z nnn_natura2000habitats_23.pdf pre LDS118 
     this->K2 = 1500; //*LDS118 - learning dataset zo 118 oznacenych segmentovanych reprezentativnych oblasti (vrcholov grafu) - vysledok finalnej optimalizacie topologie grafu siete
     this->delta = 0.003; //tiez odtialto
-    this->tau = 0.5; //napr takyto casovy krok
+    this->tau = 0.1; //napr takyto casovy krok
 }
 
 double Algorithm::getEpsilon(const Point& v, const Point& u) //parameter epsilon smeru difuzie: > 0 - dopredna difuzia, < 0 - spatna difuzia
@@ -252,4 +253,46 @@ void Algorithm::runNatNumNet(int maxTimeSteps)
         //3. krok: vyriesime sustavu rovnic pomocou SOR a spustime difuziu (pohyb bodov)
         solveSystemSOR();
     }
+}
+
+void Algorithm::saveSimulationToFile(std::string filename, int maxTimeSteps)
+{
+    std::ofstream outFile(filename);
+    if (!outFile.is_open()) {
+        return; //ak sa subor nepodarilo otvorit
+    }
+
+    //zapiseme zaciatok zoznamu pre mathematica: {
+    outFile << "{\n";
+
+    for (int step = 1; step <= maxTimeSteps; step++) {
+        //1. krok: vytvorime topologiu grafu a spocitame difuzne koeficienty
+        buildGraph();
+
+        //2. krok: zostavime maticu sustavy
+        buildSystemMatrix();
+
+        //3. krok: vyriesime sustavu a posunieme body
+        solveSystemSOR();
+
+        //export pozicii vsetkych bodov do suboru pre tento casovy krok
+        outFile << "{";
+        const auto& points = dataset->getPoints();
+        for (size_t i = 0; i < points.size(); i++) {
+            //zapiseme bod ako {x1, x2, klaster, newcomer_flag}
+            outFile << "{" << points[i].x1 << ", " << points[i].x2 << ", " << points[i].cluster_num << ", " << (points[i].isNewObservation ? 1 : 0) << "}";
+            if (i < points.size() - 1) {
+                outFile << ", ";
+            }
+        }
+        outFile << "}";
+
+        if (step < maxTimeSteps) {
+            outFile << ",\n"; // ciarka medzi casovymi krokmi
+        }
+    }
+
+    // zatvorime hlavny zoznam pre mathematice: }
+            outFile << "\n}\n";
+        outFile.close();
 }
