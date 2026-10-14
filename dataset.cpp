@@ -37,11 +37,12 @@ void Dataset::generateData(int N_c)
 {
     clear();
     this->N_C = N_c;
-    double std_deviation = 0.15; //smerodajna odchylka bodov voci centroidu
+    double std_deviation = 0.05; //smerodajna odchylka bodov voci centroidu
 
     //generator(gen) pre nah cisla z nejakeho rozdelenia
-    std::random_device rd;
-    std::mt19937 gen(rd()); 
+    //std::random_device rd;
+    //std::mt19937 gen(rd());
+    std::mt19937 gen(99); //pre pekne experimentovanie pri kazdom spusteni programu fixujeme rovnake pocitocne pozicie bodov
 
     std::uniform_real_distribution<double> unifDist(0.2, 0.8); //vytvarame rovnomerna rozdelenie v rozsah 0.2 az 0.8 (aby centroidy neboli na uplnom okraji)
     std::normal_distribution<double> normalDist(0.0, std_deviation); //vytvarame rozdelnie - predpis pre generaciu pomocou motora gen na generaciu normalne(Gaussovo) rozdelenych bodov

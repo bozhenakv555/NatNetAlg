@@ -6,9 +6,9 @@ class Algorithm {
 private:
     Dataset* dataset;
     //parametre modelu:
-    double tau; //casovy krok (delta t)
     double K1, K2; //vahove koeficienty pre jednotlive suradnice (dimenzie (tu mame 2)) FS
     double delta; //parameter velkosti difuzneho okolia (pre nove pozorovanie)
+    double tau; //casovy krok 
 
     std::vector<std::vector<double>> diffusionCoefs; //matica difuznych koedficientov na hranach medzi vsetkymi bodmi
     //- "matica susednosti" (reprezentuje nas graf, kde kazdy bod je prepojeny s kazdym:
@@ -23,7 +23,10 @@ private:
     double calculateDiffusionCoef(const Point& v, const Point& u);
 
 public:
+    //Algorithm(Dataset* ds, double K1 = 3100.0, double K2 = 1500.0, double delta = 0.0, double tau = 0.5) : dataset(ds), K1(K1), K2(K2), delta(delta), tau(tau) {};
     Algorithm(Dataset* ds);
+    Algorithm(Dataset* ds, double K1, double K2);
+    Algorithm(Dataset* ds, double K1, double K2, double delta, double tau);
 
     bool buildGraph(double diffusionGap = 0.01); //topologia grafu-priprava hran a vypocet koeficientov (a rovno zistujeme ci uz mozeme zastavit simulaciu - vrati true ak sa uz vsetky body v klastroch dostatocne zhlukli (koeficient sa blizi k 1))
     void buildSystemMatrix(); //konstrukcia prirodzenej siete - numericka diskretizacia pomocou semi-implicitnej schemy

@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
         <Qt_DEFINES_>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB</Qt_DEFINES_>
-    <Qt_INCLUDEPATH_>"D:\BAKALARKA\NatNet Algorithm\NatNetAlg\NatNetAlg\x64\Release\qt\qmake\6b7f08bb65fb4e7dad82c9449e5f9a88";C:\Qt\6.10.1\msvc2022_64\include;C:\Qt\6.10.1\msvc2022_64\include\QtWidgets;C:\Qt\6.10.1\msvc2022_64\include\QtGui;C:\Qt\6.10.1\msvc2022_64\include\QtCore;"D:\BAKALARKA\NatNet Algorithm\NatNetAlg\NatNetAlg\x64\Release\qt\qmake\6b7f08bb65fb4e7dad82c9449e5f9a88";C:\Qt\6.10.1\msvc2022_64\mkspecs\win32-msvc</Qt_INCLUDEPATH_>
+    <Qt_INCLUDEPATH_>"D:\BAKALARKA\NatNet Algorithm\NatNetAlg\NatNetAlg\x64\Release\qt\qmake\1f02768485fc4c74acf4e3f1abd27cfe";C:\Qt\6.10.1\msvc2022_64\include;C:\Qt\6.10.1\msvc2022_64\include\QtWidgets;C:\Qt\6.10.1\msvc2022_64\include\QtGui;C:\Qt\6.10.1\msvc2022_64\include\QtCore;"D:\BAKALARKA\NatNet Algorithm\NatNetAlg\NatNetAlg\x64\Release\qt\qmake\1f02768485fc4c74acf4e3f1abd27cfe";C:\Qt\6.10.1\msvc2022_64\mkspecs\win32-msvc</Qt_INCLUDEPATH_>
     <Qt_STDCPP_>stdcpp17</Qt_STDCPP_>
     <Qt_RUNTIME_>MultiThreadedDLL</Qt_RUNTIME_>
     <Qt_CL_OPTIONS_>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr -utf-8</Qt_CL_OPTIONS_>

@@ -5,3 +5,6 @@ build/
 *.suo
 .cmake/
 CMakeCache.txt
+
+simulacia0new_K1_*_K2_*.txt
+*.nb

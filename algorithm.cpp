@@ -1,7 +1,6 @@
 #include "algorithm.h"
 #include <algorithm> //pre max function
 #include <fstream> //pre pracu so subormi
-#include <iostream> //pre cout
 
 Algorithm::Algorithm(Dataset* ds)
 {
@@ -9,8 +8,24 @@ Algorithm::Algorithm(Dataset* ds)
 
     this->K1 = 3100; //z nnn_natura2000habitats_23.pdf pre LDS118 
     this->K2 = 1500; //*LDS118 - learning dataset zo 118 oznacenych segmentovanych reprezentativnych oblasti (vrcholov grafu) - vysledok finalnej optimalizacie topologie grafu siete
-    this->delta = 0.003; //tiez odtialto
-    this->tau = 0.3; //napr takyto casovy krok
+    this->delta = 0.003; //tiez odtialto 
+    this->tau = 0.5; //napr takyto casovy krok
+}
+
+Algorithm::Algorithm(Dataset* ds, double K1, double K2)
+{
+    this->dataset = ds;
+    this->K1 = K1;
+    this->K2 = K2;
+}
+
+Algorithm::Algorithm(Dataset* ds, double K1, double K2, double delta, double tau)
+{
+    this->dataset = ds;
+    this->K1 = K1;
+    this->K2 = K2;
+    this->delta = delta;
+    this->tau = tau;
 }
 
 double Algorithm::getEpsilon(const Point& v, const Point& u) //parameter epsilon smeru difuzie: > 0 - dopredna difuzia, < 0 - spatna difuzia
@@ -273,9 +288,8 @@ int Algorithm::runNatNumNet(int maxTimeSteps)
 
         //3. krok: vyriesime sustavu rovnic pomocou SOR a spustime difuziu (pohyb bodov)
         solveSystemSOR();
-
-        return stepsTaken;
     }
+    return stepsTaken;
 }
 
 int Algorithm::saveSimulationToFile(std::string filename, int maxTimeSteps)
