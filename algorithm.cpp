@@ -86,8 +86,20 @@ bool Algorithm::buildGraph(double diffusionGap)
             if (points[i].cluster_num == points[j].cluster_num &&
                 !points[i].isNewObservation && !points[j].isNewObservation) {
 
+                //povodna kontrola podla difuzneho koeficientu (pre K1, K2 > 0)
                 //ak odchylka g_e od idealnej jednotky (g_e=1 ked vzdialenost medzi bodmi je nulova) je stale vzdialena viac ako na 0.01, simulacia pokracuje (zatial nie je stabilizovana)
                 if ((1.0 - g_e) > diffusionGap) {
+                    isStabilized = false;
+                }
+
+                //poistka K1=0, K2=0 (kedy g_e = epsilon = 1 aby vidiet dynamiku pre 0 k-cka)
+                //skontrolujeme realnu euklidovsku vzdialenost medzi bodmi
+                double dx = points[i].x1 - points[j].x1;
+                double dy = points[i].x2 - points[j].x2;
+                double dist = std::sqrt(dx * dx + dy * dy);
+
+                //ak su body stale od seba dalej ako nejaka mala hranica (napr. 0.01), tak urcite este nie su stabilizovane v jednom bode!
+                if (dist > 0.01) {
                     isStabilized = false;
                 }
             }
@@ -305,19 +317,6 @@ int Algorithm::saveSimulationToFile(std::string filename, int maxTimeSteps)
     outFile << "{\n";
 
     for (int step = 1; step <= maxTimeSteps; step++) {
-        //1. krok: vytvorime topologiu grafu a spocitame difuzne koeficienty +skontrolujeme, ci mame je uz simulacia stabilizovana
-        if (buildGraph(0.01)) {
-            stepsTaken = step - 1; //zaznamename si, kolko krokov sa realne uskutocnilo (minus 1, lebo v aktualnom po splneni podmienky stabilizovanosti sa uz body nehybali)
-            break;
-        }
-
-        //2. krok: zostavime maticu sustavy
-        buildSystemMatrix();
-
-        //3. krok: vyriesime sustavu a posunieme body
-        solveSystemSOR();
-
-
         //ak nie sme v prvom kroku, vlozime najprv ciarku pred novym zapisanym bodom (teda po tom predchadzajucom)
         //(to robime preto, aby nemali sme po break zbytocnu ciarku na konci zoznamu)
         if (step > 1) {
@@ -334,6 +333,18 @@ int Algorithm::saveSimulationToFile(std::string filename, int maxTimeSteps)
             }
         }
         outFile << "}";
+        //vytvorime topologiu grafu a spocitame difuzne koeficienty +skontrolujeme, ci mame je uz simulacia stabilizovana
+        if (buildGraph(0.01)) {
+            stepsTaken = step - 1; //zaznamename si, kolko krokov sa realne uskutocnilo (minus 1, lebo v aktualnom po splneni podmienky stabilizovanosti sa uz body nehybali)
+            break;
+        }
+
+        //zostavime maticu sustavy
+        buildSystemMatrix();
+
+        //vyriesime sustavu a posunieme body
+        solveSystemSOR();
+
     }
 
     //zatvorime hlavny zoznam pre mathematica: }

@@ -59,8 +59,6 @@ int main() {
 
         for (double k2 = 0; k2 <= 5000; k2 += 500) {
 
-            if (k1 == 0 && k2 == 0) continue;
-
             int correctly_classified = 0; //counter uspesnych pripadov pre tuto konkretnu dvojicu K1, K2
 
             //cylkus pre testovanie kazdeho jedneho bodu ako newcomera (Leave-One-Out)
@@ -105,6 +103,11 @@ int main() {
                         nearestClust_num = current_points[j].cluster_num;
                     }
                 }
+
+                //ak je newcomer po stabilizacii stale prilis daleko (viac ako 0.1) od vsetkych bodov, znamena to, ze je to outlierma nasilu ho nezaradime nikam
+                if (min_distance > 0.1) {
+                    nearestClust_num = -1; //zamerne neexistujuci klaster, aby zlyhala kontrola uspesnosti vyssie
+                }  
 
                 //skontrolujeme ci sa trafil
                 if (nearestClust_num == correctCluster_num) {
