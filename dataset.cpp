@@ -33,11 +33,10 @@ void Dataset::setNewcomerStatus(int index, bool status)
     }
 }
 
-void Dataset::generateData(int N_c)
+void Dataset::generateData(int N_c, double std_deviation)
 {
     clear();
     this->N_C = N_c;
-    double std_deviation = 0.05; //smerodajna odchylka bodov voci centroidu
 
     //generator(gen) pre nah cisla z nejakeho rozdelenia
     //std::random_device rd;

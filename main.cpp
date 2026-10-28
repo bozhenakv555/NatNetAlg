@@ -5,6 +5,7 @@
 #include "algorithm.h"
 #include <cmath> //kvoli sqrt
 #include <fstream> //pre subory
+#include <filesystem> //kniznica pre pracu s priecinkami a suborovym systemom
 
 //int main() {
 //    Dataset dataset;
@@ -39,25 +40,49 @@
 //    return 0;
 //}
 
-
+//pomocna struktura na zapamatanie vysledkov grid search
+struct GridSearchResult {
+    double delta;
+    double k1;
+    double k2;
+    int correctly_classified;
+    double accuracy;
+};
 
 int main() {
     Dataset dataset;
 
+    double std_dev = 0.05; 
+
     //vygenerujeme zakladny dataset: 5 klastrov po 5 bodov = 25 bodov (vdaka seedu 99 bude vzdy rovnaky)
-    dataset.generateData(5);
+    dataset.generateData(5, std_dev);
 
     //ulozime si pociatocne pozicie, aby sme ich mohli pred kazdym testom obnovit do povodneho stavu
     std::vector<Point> original_points = dataset.getPoints();
     int N_v = original_points.size();
+    int N_c = dataset.getNumClusters();
+
+    //najdeme prveho newcomera pre kazdy klaster 
+    std::vector<int> representative_newcomers(N_c, -1);
+    for (int j = 0; j < N_v; j++) {
+        int c = original_points[j].cluster_num;
+        //ak sme pre tento klaster este neukladali ziadneho reprezentanta, zapiseme si ho
+        if (representative_newcomers[c] == -1) {
+            representative_newcomers[c] = j;
+        }
+    }
 
     //vytvorime jednoduchy textovy subor, kde budeme ukladat vysledky do stlpcov (K1, K2, Uspesnost)
-    std::ofstream resultsFile("vysledky_grid_search2.txt");
+    std::ofstream resultsFile("vysledky_grid_search3.txt");
     //grid search - systematicke testovanie vsetkych kombinacii parametrov K1 a K2 (ako na mriezke), aby sme zistili, pri akych hodnotach sa newcomer zariadi do klastra s najvyssou uspesnostou
     resultsFile << "Delta\tK1\tK2\tSpravne\tUspesnost\n"; //hlavicka tabulky
 
-    std::cout << "Grid Search s K1, K2 od 0 do 5000 z krokom 500 a s Deltou od 0 po 0.05 s krokom 0.003\n" << std::endl;
+    std::cout << "Grid Search s K1, K2 od 0 do 5000 z krokom 500 a s Deltou od 0 po 0.05 s krokom 0.03\n" << std::endl;
 
+    std::vector<GridSearchResult> all_results;
+    double max_accuracy = -1.0;
+
+    //GRID SEARCH V RAM
     for (double delta = 0.0; delta < 0.049; delta += 0.003) {
         for (double k1 = 0; k1 <= 5000; k1 += 500) {
 
@@ -125,12 +150,62 @@ int main() {
 
                 //zapis do nasej tabulky
                 resultsFile << delta << "\t" << k1 << "\t" << k2 << "\t" << correctly_classified << "\t" << accuracy << "\n";
+
+                //ulozime si vysledok do vektora
+                GridSearchResult res{ delta, k1, k2, correctly_classified, accuracy };
+                all_results.push_back(res);
+
+                //aktualizujeme maximalnu uspesnost
+                if (accuracy > max_accuracy) {
+                    max_accuracy = accuracy;
+                }
             }
         }
     }
 
     resultsFile.close();
-    std::cout << "\nGrid Search uspesne ukonceny. Tabulka ulozena v: vysledky_grid_search2.txt" << std::endl;
+    std::cout << "\nGrid Search uspesne ukonceny. Tabulka ulozena v: vysledky_grid_search3.txt" << std::endl;
+    std::cout << "\n\nUkladame simulacne subory pre najlepsie kombinacie parametrov...\n";
+
+    //EXPORT SIMULACNYCH SUBOROV IBA PRE NAJUSPESNEJSIE KOMBINACIE A PRE KAZDY Z 5 KLASTROV
+    int exported_combinations = 0;
+
+    for (const GridSearchResult res : all_results) {
+        //vyberame iba kombinacie, ktore dosiahli maximalnu uspesnost (napr. 100% alebo najvyssiu moznu z testovanych)
+        if (res.accuracy == max_accuracy) {
+
+            //pre kazdy z 5 klastrov vygenerujeme simulaciu s jeho reprezentativnym newcomerom
+            for (int c = 0; c < N_c; c++) {
+                int newcomer_idx = representative_newcomers[c];
+
+                //reset datasetu
+                for (int j = 0; j < N_v; j++) {
+                    dataset.updatePointCoordinates(j, original_points[j].x1, original_points[j].x2);
+                    dataset.setNewcomerStatus(j, false);
+                }
+
+                dataset.setNewcomerStatus(newcomer_idx, true);
+
+                Algorithm alg(&dataset, res.k1, res.k2, res.delta, 0.1);
+
+                int std_dev_int = (int)std::round(std_dev * 100); //0.05 -> 5
+
+                std::string folderName = "simulaciaK1K2Delta_std_" + std::to_string(std_dev_int) + "_klaster_" + std::to_string(c);
+                std::filesystem::create_directories(folderName);
+
+                std::string filename = folderName + "/simulacia_std_" + std::to_string(std_dev_int) +
+                    "_klaster_" + std::to_string(c) +
+                    "_Delta_" + std::to_string((int)std::round(res.delta * 1000)) +
+                    "_K1_" + std::to_string((int)res.k1) +
+                    "_K2_" + std::to_string((int)res.k2) + ".txt";
+
+                alg.saveSimulationToFile(filename, 500);
+            }
+            exported_combinations++;
+        }
+    }
+
+    std::cout << "Uspesne exportovane simulacie pre " << exported_combinations << " najlepsich kombinacii parametrov (pre vsetkych 5 klastrov).\n";
 
     return 0;
 }

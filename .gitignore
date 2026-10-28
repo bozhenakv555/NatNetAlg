@@ -11,3 +11,4 @@ simulacia0new_Delta_*_K1_*_K2_*.txt
 *.nb
 simulaciaK1K2_0new/
 simulaciaK1K2Delta_0new/
+simulaciaK1K2Delta_std_*/

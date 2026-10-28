@@ -10,7 +10,7 @@ private:
 public:
 	Dataset() {};
 
-	void generateData(int N_c);
+	void generateData(int N_c, double std_deviation = 0.05);
 
 	void loadDataFromFile(std::string filename);
 
