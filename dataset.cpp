@@ -51,8 +51,8 @@ void Dataset::generateData(int N_c, double std_deviation)
     for (int cluster_num = 0; cluster_num < N_c; cluster_num++) {
 
 
-        //int pointsInCluster = 3 + (rand() % 8); //pocet bodov v klastri (nah cislo v rozsahu od 3 po 10)
-        int pointsInCluster = 5; 
+        int pointsInCluster = 3 + (rand() % 8); //pocet bodov v klastri (nah cislo v rozsahu od 3 po 10)
+        //int pointsInCluster = 5; 
 
         double centroid_x = unifDist(gen);
         double centroid_y = unifDist(gen);

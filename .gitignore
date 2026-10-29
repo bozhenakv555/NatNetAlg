@@ -12,3 +12,6 @@ simulacia0new_Delta_*_K1_*_K2_*.txt
 simulaciaK1K2_0new/
 simulaciaK1K2Delta_0new/
 simulaciaK1K2Delta_std_*/
+simulacia_vahy_clusterSize/
+simulacia_BEZvahy_clusterSize/
+simulaciaK1K2DeltaVelke_std_*/

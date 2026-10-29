@@ -70,6 +70,13 @@ bool Algorithm::buildGraph(double diffusionGap)
     const std::vector<Point> points = dataset->getPoints();
     int N_v = points.size(); //pocet vrholov grafu (dim matice susednosti)
 
+    std::vector<int> cluster_sizes(dataset->getNumClusters(), 0); //vektor "pocitadiel" pre body pre kazdy klaster, inicializovane na nulu
+    for (const Point p : points) {
+        if (!p.isNewObservation) {
+            cluster_sizes[p.cluster_num]++; //zvysime pocet prave v prislusnom klastri daneho bodu
+        }
+    }
+
     //nastavime velkost matice na N_v*N_v a vyplneme ju nulami zatial:
     diffusionCoefs.assign(N_v, std::vector<double>(N_v, 0.0)); //v assign: 1.arg nastavi #riadkov, 2.arg. co tie riadky obsahuju (tu: stlpec nul s dlzkou N_v)
 
@@ -80,6 +87,15 @@ bool Algorithm::buildGraph(double diffusionGap)
             if (i == j) continue; //vrchol nema hranu sam zo sebou
 
             double g_e = calculateDiffusionCoef(points[i], points[j]);
+
+            if (!points[j].isNewObservation) { //ak bod 'j' (ten co pritahuje - susedny, orave posobi na 'i') nie je novacik
+                int clust_size = cluster_sizes[points[j].cluster_num];
+                if (clust_size > 0) {
+                    double weight = 1.0 / clust_size; //"normalizujeme silu klastra" -> cim viac bodov klaster ma, tym mensiu vahu dostane jeden jeho bod
+                    g_e *= weight;
+                }
+            }
+
             diffusionCoefs[i][j] = g_e;
 
             //kontrola stabilizacie iba pre body vo vnutri rovnakeho klastra (okrem newcomerov)
